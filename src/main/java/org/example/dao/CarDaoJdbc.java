@@ -1,4 +1,8 @@
-package org.example;
+package org.example.dao;
+import org.example.CarDto;
+import org.example.Config;
+import org.example.antity.Car;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -6,7 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-public class CarDao {
+public class CarDaoJdbc implements CarDao{
     public void createCarTable() {
         try (Connection connection = Config.getConnection(); Statement statement = connection.createStatement()) {
             statement.execute("CREATE TABLE IF NOT EXISTS Car(id int primary key auto_increment, mark varchar(40), " +
@@ -53,47 +57,47 @@ public class CarDao {
             throw new RuntimeException(e);
         }
     }
-    public void deleteCarById(int id) {
+    public void removeCarById(long id) {
         final String DELETE_CAR = "DELETE FROM Car WHERE id = ?";
         try (Connection connection = Config.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_CAR)) {
-            statement.setInt(1, id);
+            statement.setLong(1, id);
             statement.execute();
             System.out.println("Удалось удалить автомобиль:" + id);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public CarDto getCarById(int id) {
+    public Car getCarById(long id) {
         final String GET_CAR = "SELECT * FROM Car WHERE id = ?";
-        CarDto carDto = null;
+        Car car = null;
         try (Connection connection = Config.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(GET_CAR)) {
-            preparedStatement.setInt(1, id);
+            preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 String mark = resultSet.getString("mark");
                 String model = resultSet.getString("model");
                 String state_number = resultSet.getString("state_number");
                 int year = resultSet.getInt("year");
-                carDto = new CarDto(id, mark, model, state_number, year);
+                car = new Car(id, mark, model, state_number, year);
             }
-            return carDto;
+            return car;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-    public List<CarDto> getAllCars() {
-        List<CarDto> cars = new ArrayList<>();
+    public List<Car> getAllCars() {
+        List<Car> cars = new ArrayList<>();
         try (Connection connection = Config.getConnection(); Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM Car");
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
+                long id = resultSet.getLong("id");
                 String mark = resultSet.getString("mark");
                 String model = resultSet.getString("model");
                 String state_number = resultSet.getString("state_number");
                 int year = resultSet.getInt("year");
-                CarDto car = new CarDto(id, mark, model, state_number, year);
+                Car car = new Car(id, mark, model, state_number, year);
                 cars.add(car);
             }
             return cars;
