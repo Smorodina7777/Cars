@@ -3,23 +3,27 @@ package org.example.antity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.dto.AutoDoc;
+import org.example.dto.Ouner;
 
 import javax.persistence.*;
 
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column
+
     private  String mark;
-    @Column
+
     private  String model;
-    @Column(name = "state_number")
-    private  String stateNumber;
-    @Column
+
+    private  String seria;
+
     private int year;
+    @Embedded
+    private Ouner ouner;
+    @Embedded
+    private AutoDoc autoDoc;
 }
